@@ -59,6 +59,24 @@ func NewProj(definition string) (*Proj, error) {
 	return &proj, err
 }
 
+func InvertProj(sproj *Proj) (*Proj, error) {
+	//cs := C.CString(definition)
+	//defer C.free(unsafe.Pointer(cs))
+	proj := Proj{opened: false}
+	proj.pj = C.pj_latlong_from_proj(sproj.pj)
+
+	var err error = nil
+	s := C.GoString(C.get_err())
+	if s == "" {
+		proj.opened = true
+	} else {
+		err = errors.New(s)
+	}
+
+	return &proj, err
+}
+
+
 func (p *Proj) Close() {
 	if p.opened {
 		C.pj_free(p.pj)
